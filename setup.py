@@ -21,16 +21,15 @@ requires = [
 
 setup(
   name="gapy",
-  version="0.0.1",
+  version="0.0.2",
   description="Painless Google Analytics",
-  long_description=open("README.md").read(),
   author="Rob Young",
   url="https://github.com/robyoung/gapy",
   packages=packages,
   package_dir={"gapy":"gapy"},
   include_package_data=True,
   install_requires=requires,
-  license=open("LICENSE").read(),
+  license="https://raw.github.com/robyoung/gapy/master/LICENSE",
   classifiers=[
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
