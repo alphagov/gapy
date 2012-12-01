@@ -18,11 +18,11 @@ class GapyTest(unittest.TestCase):
     with self.assertRaises(gapy.GapyError):
       gapy.service_account("account_name", "private_key")
 
-  @patch("gapy._build")
+  @patch("gapy.client._build")
   def test_service_account_created(self, build):
     client = gapy.service_account("account_name", "private_key", storage_path="/tmp/foo.dat")
     build.assert_called_with(ANY)
-    self.assertIsInstance(client, gapy.Client)
+    self.assertIsInstance(client, gapy.client.Client)
 
 
 class ManagementClientTest(unittest.TestCase):
