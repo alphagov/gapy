@@ -35,7 +35,7 @@ setup(
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "Natural Language :: English",
-    "Programming Language :: Python"
+    "Programming Language :: Python",
     "License :: OSI Approved :: MIT License"
   ]
 )
