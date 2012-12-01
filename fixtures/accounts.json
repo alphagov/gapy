@@ -1,0 +1,21 @@
+{
+      "username": "673591833363@developer.gserviceaccount.com",
+      "kind": "analytics#accounts",
+      "items": [
+          {
+          "kind": "analytics#account",
+          "name": "www.gov.uk",
+          "created": "2011-10-07T10:02:54.859Z",
+          "updated": "2012-11-28T21:03:04.319Z",
+          "childLink": {
+            "href": "https://www.googleapis.com/analytics/v3/management/accounts/26179049/webproperties",
+            "type": "analytics#webproperties"
+          },
+          "id": "26179049",
+          "selfLink": "https://www.googleapis.com/analytics/v3/management/accounts/26179049"
+        }
+      ],
+      "itemsPerPage": 1000,
+      "startIndex": 1,
+      "totalResults": 1
+    }

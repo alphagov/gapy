@@ -1,0 +1,33 @@
+{
+    "username": "673591833363@developer.gserviceaccount.com", 
+    "kind": "analytics#profiles", 
+    "items": [
+        {
+            "kind": "analytics#profile", 
+            "name": "1. GOV.UK (Entire site - Filtered)", 
+            "created": "2011-12-12T11:21:34.192Z", 
+            "updated": "2012-11-28T21:03:04.319Z", 
+            "siteSearchQueryParameters": "q", 
+            "websiteUrl": "https://www.gov.uk", 
+            "currency": "GBP", 
+            "internalWebPropertyId": "50705554", 
+            "childLink": {
+                "href": "https://www.googleapis.com/analytics/v3/management/accounts/26179049/webproperties/UA-26179049-1/profiles/53872948/goals", 
+                "type": "analytics#goals"
+            }, 
+            "eCommerceTracking": true, 
+            "webPropertyId": "UA-26179049-1", 
+            "timezone": "Europe/London", 
+            "parentLink": {
+                "href": "https://www.googleapis.com/analytics/v3/management/accounts/26179049/webproperties/UA-26179049-1", 
+                "type": "analytics#webproperty"
+            }, 
+            "id": "53872948", 
+            "selfLink": "https://www.googleapis.com/analytics/v3/management/accounts/26179049/webproperties/UA-26179049-1/profiles/53872948", 
+            "accountId": "26179049"
+        }
+    ], 
+    "itemsPerPage": 1000, 
+    "startIndex": 1, 
+    "totalResults": 1
+}

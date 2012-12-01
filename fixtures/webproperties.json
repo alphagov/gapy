@@ -1,0 +1,28 @@
+{
+    "username": "673591833363@developer.gserviceaccount.com", 
+    "kind": "analytics#webproperties", 
+    "items": [
+        {
+            "kind": "analytics#webproperty", 
+            "name": "Single Domain www.gov.uk", 
+            "created": "2011-10-07T10:02:54.859Z", 
+            "updated": "2012-10-02T20:08:17.450Z", 
+            "websiteUrl": "https://www.gov.uk", 
+            "internalWebPropertyId": "50705554", 
+            "childLink": {
+                "href": "https://www.googleapis.com/analytics/v3/management/accounts/26179049/webproperties/UA-26179049-1/profiles", 
+                "type": "analytics#profiles"
+            }, 
+            "parentLink": {
+                "href": "https://www.googleapis.com/analytics/v3/management/accounts/26179049", 
+                "type": "analytics#account"
+            }, 
+            "id": "UA-26179049-1", 
+            "selfLink": "https://www.googleapis.com/analytics/v3/management/accounts/26179049/webproperties/UA-26179049-1", 
+            "accountId": "26179049"
+        }
+    ], 
+    "itemsPerPage": 1000, 
+    "startIndex": 1, 
+    "totalResults": 1
+}
