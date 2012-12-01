@@ -42,7 +42,6 @@ def _build(http):
   """Build the client object."""
   return build("analytics", "v3", http=http)
 
-
 class Client(object):
   def __init__(self, service):
     self._service = service
