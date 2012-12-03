@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 import urlparse
 
 class BaseResponse(object):
@@ -30,7 +30,9 @@ class QueryResponse(BaseResponse):
     while True:
       for row in self._response["rows"]:
         result = {
-          "metrics": dict(zip(self._metrics, row[len(self._dimensions):]))
+          "metrics": dict(zip(self._metrics, row[len(self._dimensions):])),
+          "start_date": datetime.strptime(self._response["query"]["start-date"], "%Y-%m-%d").date(),
+          "end_date": datetime.strptime(self._response["query"]["end-date"], "%Y-%m-%d").date()
         }
         if self._dimensions:
           result["dimensions"] = dict(zip(self._dimensions, row[:len(self._dimensions)]))

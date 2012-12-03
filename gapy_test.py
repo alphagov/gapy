@@ -46,7 +46,7 @@ class ManagementClientTest(unittest.TestCase):
     self.assertEqual(accounts.username, "673591833363@developer.gserviceaccount.com")
     self.assertEqual(accounts.kind, "analytics#accounts")
 
-    account = accounts.__iter__().next()
+    account = iter(accounts).next()
     self.assertEqual(account["id"], "26179049")
 
   def test_account(self):
@@ -71,7 +71,7 @@ class ManagementClientTest(unittest.TestCase):
     self.assertEqual(webproperties.username, "673591833363@developer.gserviceaccount.com")
     self.assertEqual(webproperties.kind, "analytics#webproperties")
 
-    webproperty = webproperties.__iter__().next()
+    webproperty = iter(webproperties).next()
     self.assertEqual(webproperty["id"], "UA-26179049-1")
 
   def test_webproperty(self):
@@ -140,7 +140,7 @@ class QueryClientTest(unittest.TestCase):
     )
     self.assertEqual(results.kind, "analytics#gaData")
     self.assertEqual(len(results), 48)
-    result = results.__iter__().next()
+    result = iter(results).next()
     self.assertEqual(result["metrics"], {"metric": "00"})
     self.assertEqual(result["dimensions"]["dimension"], u'20121110')
 
@@ -149,20 +149,22 @@ class QueryClientTest(unittest.TestCase):
 
     results = self.client.get(
       ["12345", "123456"],
-      date(2012, 1, 1), date(2012, 1, 2),
+      date(2012, 11, 10), date(2012, 11, 11),
       ["metric", "metric2"], ["dimension", "dimension2"]
     )
 
     self.assert_get_called(
       ids="ga:12345,ga:123456",
-      start_date="2012-01-01", end_date="2012-01-02",
+      start_date="2012-11-10", end_date="2012-11-11",
       metrics="ga:metric,ga:metric2", dimensions="ga:dimension,ga:dimension2"
     )
     self.assertEqual(results.kind, "analytics#gaData")
     self.assertEqual(len(results), 48)
-    result = results.__iter__().next()
+    result = iter(results).next()
     self.assertEqual(result["metrics"], {"metric":"8083", "metric2":"7643"})
     self.assertEqual(result["dimensions"], {"dimension":"20121110", "dimension2":"00"})
+    self.assertEqual(result["start_date"], date(2012, 11, 10))
+    self.assertEqual(result["end_date"], date(2012, 11, 11))
 
   def test_short_query_with_no_dimension(self):
     self.mock_get("short-query")
@@ -195,11 +197,11 @@ class QueryClientTest(unittest.TestCase):
     )
     self.assertEqual(results.kind, "analytics#gaData")
     self.assertEqual(len(results), 2)
-    iter = results.__iter__()
-    iter.next()
-    iter.next()
-    iter.next()
-    iter.next()
+    i = iter(results)
+    i.next()
+    i.next()
+    i.next()
+    i.next()
 
     calls = self.get_call_args_list()
     self.assertEqual(len(calls), 2)
