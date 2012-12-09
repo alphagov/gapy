@@ -14,7 +14,7 @@ import gapy
 client = gapy.service_account("your account name",
             private_key="your private key",
             storage_path="path/to/storage.db")
-client.query.get("12345",
+reach_data = client.query.get("12345",
             datetime(2012, 1, 1),
             datetime(2012, 2, 2),
             ["visits", "visitors"],
