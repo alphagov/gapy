@@ -20,7 +20,7 @@ def _get_storage(storage, storage_path):
     return storage
 
 
-def client_from_private_key(account_name, private_key=None, private_key_path=None,
+def from_private_key(account_name, private_key=None, private_key_path=None,
                     storage=None, storage_path=None):
     """Create a client for a service account.
 
@@ -51,7 +51,7 @@ def client_from_private_key(account_name, private_key=None, private_key_path=Non
     return Client(_build(credentials))
 
 
-def client_from_secrets_file(client_secrets, storage=None, storage_path=None):
+def from_secrets_file(client_secrets, storage=None, storage_path=None):
     """Create a client for a web or installed application.
 
     Create a client with a client secrets file.

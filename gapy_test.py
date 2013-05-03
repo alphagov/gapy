@@ -2,9 +2,11 @@ from datetime import date
 import json
 import unittest
 from oauth2client.clientsecrets import InvalidClientSecretsError
-import gapy
+
 from mock import patch, ANY, Mock, call
-from gapy.client import ManagementClient, QueryClient, client_from_secrets_file
+from gapy.error import GapyError
+from gapy.client import ManagementClient, QueryClient, Client, \
+    from_private_key, from_secrets_file
 
 
 def fixture(name):
@@ -14,33 +16,34 @@ def fixture(name):
 class GapyTest(unittest.TestCase):
     def test_service_account_fails_with_no_private_key(self):
         self.assertRaises(
-            gapy.GapyError,
-            gapy.client_from_private_key,
+            GapyError,
+            from_private_key,
             "account_name")
 
     def test_service_account_fails_with_no_storage(self):
         self.assertRaises(
-            gapy.GapyError,
-            gapy.client_from_private_key,
+            GapyError,
+            from_private_key,
             "account_name", "private_key")
 
     @patch("gapy.client._build")
     def test_service_account_created(self, build):
-        client = gapy.client_from_private_key("account_name", "private_key",
-                                              storage_path="/tmp/foo.dat")
+        client = from_private_key(
+            "account_name", "private_key",
+            storage_path="/tmp/foo.dat")
         build.assert_called_with(ANY)
-        self.assertTrue(isinstance(client, gapy.client.Client))
+        self.assertTrue(isinstance(client, Client))
 
     def test_client_from_secrets_file_fails_with_no_secrets_file(self):
         self.assertRaises(
             InvalidClientSecretsError,
-            gapy.client_from_secrets_file,
+            from_secrets_file,
             "/non/existent", storage_path="db")
 
     def test_client_from_secrets_file_fails_with_no_storage(self):
         self.assertRaises(
-            gapy.GapyError,
-            gapy.client_from_secrets_file,
+            GapyError,
+            from_secrets_file,
             "fixtures/example_client_secrets.json")
 
 
@@ -82,7 +85,7 @@ class ManagementClientTest(unittest.TestCase):
     def test_account_fails_with_invalid_account_id(self):
         self.mock_list("accounts")
         self.assertRaises(
-            gapy.GapyError,
+            GapyError,
             self.client.account,
             "26179040")
 
@@ -110,7 +113,7 @@ class ManagementClientTest(unittest.TestCase):
     def test_webproperty_fails_with_invalid_id(self):
         self.mock_list("webproperties")
         self.assertRaises(
-            gapy.GapyError,
+            GapyError,
             self.client.webproperty,
             "26179049", "UA-26179049-2")
 
@@ -137,7 +140,7 @@ class ManagementClientTest(unittest.TestCase):
     def test_profile_fails_with_invalid_id(self):
         self.mock_list("profiles")
         self.assertRaises(
-            gapy.GapyError,
+            GapyError,
             self.client.profile,
             "26179049", "UA-26179049-2", "53872949")
 
