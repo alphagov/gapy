@@ -29,7 +29,7 @@ class GapyTest(unittest.TestCase):
         client = gapy.client_from_private_key("account_name", "private_key",
                                               storage_path="/tmp/foo.dat")
         build.assert_called_with(ANY)
-        self.assertIsInstance(client, gapy.client.Client)
+        self.assertTrue(isinstance(client, gapy.client.Client))
 
     def test_client_from_secrets_file_fails_with_no_secrets_file(self):
         self.assertRaises(
@@ -81,8 +81,10 @@ class ManagementClientTest(unittest.TestCase):
 
     def test_account_fails_with_invalid_account_id(self):
         self.mock_list("accounts")
-        with self.assertRaises(gapy.GapyError):
-            self.client.account("26179040")
+        self.assertRaises(
+            gapy.GapyError,
+            self.client.account,
+            "26179040")
 
     def test_webproperties(self):
         self.mock_list("webproperties")
@@ -107,8 +109,10 @@ class ManagementClientTest(unittest.TestCase):
 
     def test_webproperty_fails_with_invalid_id(self):
         self.mock_list("webproperties")
-        with self.assertRaises(gapy.GapyError):
-            self.client.webproperty("26179049", "UA-26179049-2")
+        self.assertRaises(
+            gapy.GapyError,
+            self.client.webproperty,
+            "26179049", "UA-26179049-2")
 
     def test_profiles(self):
         self.mock_list("profiles")
@@ -132,8 +136,10 @@ class ManagementClientTest(unittest.TestCase):
 
     def test_profile_fails_with_invalid_id(self):
         self.mock_list("profiles")
-        with self.assertRaises(gapy.GapyError):
-            self.client.profile("26179049", "UA-26179049-2", "53872949")
+        self.assertRaises(
+            gapy.GapyError,
+            self.client.profile,
+            "26179049", "UA-26179049-2", "53872949")
 
 
 class QueryClientTest(unittest.TestCase):
