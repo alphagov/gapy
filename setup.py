@@ -1,5 +1,6 @@
 import os
 import sys
+import gapy
 
 try:
     from setuptools import setup
@@ -20,8 +21,8 @@ requires = [
 ]
 
 setup(
-    name="gapy",
-    version="0.0.2",
+    name=gapy.__title__,
+    version=gapy.__version__,
     description="Painless Google Analytics",
     long_description=open(
         os.path.join(os.path.dirname(__file__), 'README.rst')).read(),
