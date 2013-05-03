@@ -23,7 +23,10 @@ setup(
     name="gapy",
     version="0.0.2",
     description="Painless Google Analytics",
+    long_description=open(
+        os.path.join(os.path.dirname(__file__), 'README.rst')).read(),
     author="Rob Young",
+    author_email="rob@roryoung.co.uk",
     url="https://github.com/robyoung/gapy",
     packages=packages,
     package_dir={"gapy": "gapy"},
