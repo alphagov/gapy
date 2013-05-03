@@ -48,10 +48,7 @@ def client_from_private_key(account_name, private_key=None, private_key_path=Non
                                                 GOOGLE_API_SCOPE)
     credentials.set_store(storage)
 
-    http = httplib2.Http()
-    http = credentials.authorize(http)
-
-    return Client(_build(http))
+    return Client(_build(credentials))
 
 
 def client_from_secrets_file(client_secrets, storage=None, storage_path=None):
@@ -73,14 +70,14 @@ def client_from_secrets_file(client_secrets, storage=None, storage_path=None):
     if credentials is None or credentials.invalid:
         credentials = run(flow, storage)
 
+    return Client(_build(credentials))
+
+
+def _build(credentials):
+    """Build the client object."""
     http = httplib2.Http()
     http = credentials.authorize(http)
 
-    return Client(_build(http))
-
-
-def _build(http):
-    """Build the client object."""
     return build("analytics", "v3", http=http)
 
 
