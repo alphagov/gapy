@@ -20,12 +20,17 @@ requires = [
     "pyOpenSSL==0.13"
 ]
 
+try:
+    long_description = open(
+        os.path.join(os.path.dirname(__file__), 'README.rst')).read()
+except:
+    long_description = None
+
 setup(
     name=gapy.__title__,
     version=gapy.__version__,
     description="Painless Google Analytics",
-    long_description=open(
-        os.path.join(os.path.dirname(__file__), 'README.rst')).read(),
+    long_description=long_description,
     author="Rob Young",
     author_email="rob@roryoung.co.uk",
     url="https://github.com/robyoung/gapy",
