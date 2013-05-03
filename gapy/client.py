@@ -1,17 +1,30 @@
 from apiclient.discovery import build
 import httplib2
-from oauth2client.client import SignedJwtAssertionCredentials
+from oauth2client.client import SignedJwtAssertionCredentials, flow_from_clientsecrets
 from oauth2client.file import Storage
+from oauth2client.tools import run
 
 from gapy.response import ManagementResponse, QueryResponse
 from gapy.error import GapyError
 
 GOOGLE_API_SCOPE = "https://www.googleapis.com/auth/analytics"
+REDIRECT_URI = "urn:ietf:wg:oauth:2.0:oob"
 
 
-def service_account(account_name, private_key=None, private_key_path=None,
+def _get_storage(storage, storage_path):
+    if not storage:
+        if not storage_path:
+            raise GapyError(
+                "Must provide either a storage object or a storage_path")
+        storage = Storage(filename=storage_path)
+    return storage
+
+
+def client_from_private_key(account_name, private_key=None, private_key_path=None,
                     storage=None, storage_path=None):
     """Create a client for a service account.
+
+    Create a client with an account name and a private key.
 
      Args:
       account_name: str, the account identifier (probably the account email).
@@ -29,15 +42,36 @@ def service_account(account_name, private_key=None, private_key_path=None,
             private_key_path = open(private_key_path)
         private_key = private_key_path.read()
 
-    if not storage:
-        if not storage_path:
-            raise GapyError(
-                "Must provide either a storage object or a storage_path")
-        storage = Storage(filename=storage_path)
+    storage = _get_storage(storage, storage_path)
 
     credentials = SignedJwtAssertionCredentials(account_name, private_key,
                                                 GOOGLE_API_SCOPE)
     credentials.set_store(storage)
+
+    http = httplib2.Http()
+    http = credentials.authorize(http)
+
+    return Client(_build(http))
+
+
+def client_from_secrets_file(client_secrets, storage=None, storage_path=None):
+    """Create a client for a web or installed application.
+
+    Create a client with a client secrets file.
+
+    Args:
+        client_secrets: str, path to the client secrets file (downloadable from
+                             Google API Console)
+      storage: oauth2client.client.Storage, a Storage implementation to store
+               credentials.
+      storage_path: str, path to a file storage.
+    """
+    flow = flow_from_clientsecrets(client_secrets,
+                                   scope=GOOGLE_API_SCOPE)
+    storage = _get_storage(storage, storage_path)
+    credentials = storage.get()
+    if credentials is None or credentials.invalid:
+        credentials = run(flow, storage)
 
     http = httplib2.Http()
     http = credentials.authorize(http)

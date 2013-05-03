@@ -1,9 +1,10 @@
 from datetime import date
 import json
 import unittest
+from oauth2client.clientsecrets import InvalidClientSecretsError
 import gapy
 from mock import patch, ANY, Mock, call
-from gapy.client import ManagementClient, QueryClient
+from gapy.client import ManagementClient, QueryClient, client_from_secrets_file
 
 
 def fixture(name):
@@ -13,18 +14,27 @@ def fixture(name):
 class GapyTest(unittest.TestCase):
     def test_service_account_fails_with_no_private_key(self):
         with self.assertRaises(gapy.GapyError):
-            gapy.service_account("account_name")
+            gapy.client_from_private_key("account_name")
 
     def test_service_account_fails_with_no_storage(self):
         with self.assertRaises(gapy.GapyError):
-            gapy.service_account("account_name", "private_key")
+            gapy.client_from_private_key("account_name", "private_key")
 
     @patch("gapy.client._build")
     def test_service_account_created(self, build):
-        client = gapy.service_account("account_name", "private_key",
-                                      storage_path="/tmp/foo.dat")
+        client = gapy.client_from_private_key("account_name", "private_key",
+                                              storage_path="/tmp/foo.dat")
         build.assert_called_with(ANY)
         self.assertIsInstance(client, gapy.client.Client)
+
+    def test_client_from_secrets_file_fails_with_no_secrets_file(self):
+        with self.assertRaises(InvalidClientSecretsError):
+            gapy.client_from_secrets_file("/non/existent", storage_path="db")
+
+    def test_client_from_secrets_file_fails_with_no_storage(self):
+        with self.assertRaises(gapy.GapyError):
+            gapy.client_from_secrets_file(
+                "fixtures/example_client_secrets.json")
 
 
 class ManagementClientTest(unittest.TestCase):
@@ -126,15 +136,15 @@ class QueryClientTest(unittest.TestCase):
 
     def mock_get(self, name):
         data = fixture("%s.json" % name)
-        self.service.data.return_value.ga.return_value.get.return_value.\
+        self.service.data.return_value.ga.return_value.get.return_value. \
             execute.return_value = data
 
     def assert_get_called(self, **kwargs):
-        self.service.data.return_value.ga.return_value.get.\
+        self.service.data.return_value.ga.return_value.get. \
             assert_called_once_with(**kwargs)
 
     def get_call_args_list(self):
-        return self.service.data.return_value.ga.return_value.get.\
+        return self.service.data.return_value.ga.return_value.get. \
             call_args_list
 
     def test_short_query(self):
