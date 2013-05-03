@@ -13,12 +13,16 @@ def fixture(name):
 
 class GapyTest(unittest.TestCase):
     def test_service_account_fails_with_no_private_key(self):
-        with self.assertRaises(gapy.GapyError):
-            gapy.client_from_private_key("account_name")
+        self.assertRaises(
+            gapy.GapyError,
+            gapy.client_from_private_key,
+            "account_name")
 
     def test_service_account_fails_with_no_storage(self):
-        with self.assertRaises(gapy.GapyError):
-            gapy.client_from_private_key("account_name", "private_key")
+        self.assertRaises(
+            gapy.GapyError,
+            gapy.client_from_private_key,
+            "account_name", "private_key")
 
     @patch("gapy.client._build")
     def test_service_account_created(self, build):
@@ -28,13 +32,16 @@ class GapyTest(unittest.TestCase):
         self.assertIsInstance(client, gapy.client.Client)
 
     def test_client_from_secrets_file_fails_with_no_secrets_file(self):
-        with self.assertRaises(InvalidClientSecretsError):
-            gapy.client_from_secrets_file("/non/existent", storage_path="db")
+        self.assertRaises(
+            InvalidClientSecretsError,
+            gapy.client_from_secrets_file,
+            "/non/existent", storage_path="db")
 
     def test_client_from_secrets_file_fails_with_no_storage(self):
-        with self.assertRaises(gapy.GapyError):
-            gapy.client_from_secrets_file(
-                "fixtures/example_client_secrets.json")
+        self.assertRaises(
+            gapy.GapyError,
+            gapy.client_from_secrets_file,
+            "fixtures/example_client_secrets.json")
 
 
 class ManagementClientTest(unittest.TestCase):
