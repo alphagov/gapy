@@ -15,7 +15,6 @@ download your client secrets file (Download JSON in API Access list).
 Then just create a gapy client and start querying. Ids, metrics and dimensions are provided without the `ga:` prefix.
 They can be provided as lists or single values.
 
-.. code:: python
     import gapy
 
     # For a service account
