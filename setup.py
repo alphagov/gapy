@@ -31,7 +31,7 @@ setup(
     version=gapy.__version__,
     description="Painless Google Analytics",
     long_description=long_description,
-    author="Rob Young",
+    author=gapy.__author__,
     author_email="rob@roryoung.co.uk",
     url="https://github.com/robyoung/gapy",
     packages=packages,
