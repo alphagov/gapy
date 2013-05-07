@@ -21,7 +21,7 @@ def _get_storage(storage, storage_path):
 
 
 def from_private_key(account_name, private_key=None, private_key_path=None,
-                    storage=None, storage_path=None):
+                     storage=None, storage_path=None):
     """Create a client for a service account.
 
     Create a client with an account name and a private key.
@@ -134,30 +134,51 @@ class QueryClient(object):
     def __init__(self, service):
         self._service = service
 
-    def get(self, ids, start_date, end_date, metrics, dimensions=None):
-        if not isinstance(ids, list):
-            ids = [ids]
-        if not isinstance(metrics, list):
-            metrics = [metrics]
+    def _to_list(self, value):
+        """Turn an argument into a list"""
+        if value is None:
+            return []
+        elif isinstance(value, list):
+            return value
+        else:
+            return [value]
+
+    def _prefix_ga(self, values):
+        """Prefix all items in a list with 'ga:'"""
+        return ("ga:%s" % value for value in values)
+
+    def _to_ga_param(self, values):
+        """Turn a list of values into a GA list parameter"""
+        return ",".join(self._prefix_ga(values))
+
+    def get(self, ids, start_date, end_date, metrics,
+            dimensions=None, filters=None):
+        ids = self._to_list(ids)
+        metrics = self._to_list(metrics)
+
         start_date = start_date.strftime("%Y-%m-%d")
         end_date = end_date.strftime("%Y-%m-%d")
-        if dimensions:
-            if not isinstance(dimensions, list):
-                dimensions = [dimensions]
-        else:
-            dimensions = []
 
-        return self._get_response(metrics, dimensions,
-                                  ids=",".join("ga:%s" % id for id in ids),
-                                  start_date=start_date,
-                                  end_date=end_date,
-                                  metrics=",".join(
-                                      "ga:%s" % metric for metric in metrics),
-                                  dimensions=",".join(
-                                      "ga:%s" % dimension for dimension in
-                                      dimensions))
+        dimensions = self._to_list(dimensions)
+        filters = self._to_list(filters)
+
+        return self._get_response(
+            metrics, dimensions,
+            ids=self._to_ga_param(ids),
+            start_date=start_date,
+            end_date=end_date,
+            metrics=self._to_ga_param(metrics),
+            dimensions=self._to_ga_param(dimensions) or None,
+            filters=self._to_ga_param(filters) or None)
+
+    def _filter_empty(self, kwargs, key):
+        if key in kwargs and kwargs[key] is None:
+            del kwargs[key]
+        return kwargs
 
     def get_raw_response(self, **kwargs):
+        kwargs = self._filter_empty(kwargs, "dimensions")
+        kwargs = self._filter_empty(kwargs, "filters")
         return self._service.data().ga().get(**kwargs).execute()
 
     def _get_response(self, m, d, **kwargs):

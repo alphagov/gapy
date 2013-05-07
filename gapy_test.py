@@ -168,12 +168,13 @@ class QueryClientTest(unittest.TestCase):
 
         results = self.client.get("12345",
                                   date(2012, 1, 1), date(2012, 1, 2),
-                                  "metric", "dimension")
+                                  "metric", "dimension", "dimension2==value")
 
         self.assert_get_called(
             ids="ga:12345",
             start_date="2012-01-01", end_date="2012-01-02",
-            metrics="ga:metric", dimensions="ga:dimension"
+            metrics="ga:metric", dimensions="ga:dimension",
+            filters="ga:dimension2==value"
         )
         self.assertEqual(results.kind, "analytics#gaData")
         self.assertEqual(len(results), 48)
@@ -187,14 +188,16 @@ class QueryClientTest(unittest.TestCase):
         results = self.client.get(
             ["12345", "123456"],
             date(2012, 11, 10), date(2012, 11, 11),
-            ["metric", "metric2"], ["dimension", "dimension2"]
+            ["metric", "metric2"], ["dimension", "dimension2"],
+            ["dimension3==value", "dimension4==value"]
         )
 
         self.assert_get_called(
             ids="ga:12345,ga:123456",
             start_date="2012-11-10", end_date="2012-11-11",
             metrics="ga:metric,ga:metric2",
-            dimensions="ga:dimension,ga:dimension2"
+            dimensions="ga:dimension,ga:dimension2",
+            filters="ga:dimension3==value,ga:dimension4==value"
         )
         self.assertEqual(results.kind, "analytics#gaData")
         self.assertEqual(len(results), 48)
@@ -206,7 +209,7 @@ class QueryClientTest(unittest.TestCase):
         self.assertEqual(result["start_date"], date(2012, 11, 10))
         self.assertEqual(result["end_date"], date(2012, 11, 11))
 
-    def test_short_query_with_no_dimension(self):
+    def test_short_query_with_no_dimension_or_filters(self):
         self.mock_get("short-query")
 
         results = self.client.get("12345",
@@ -216,7 +219,7 @@ class QueryClientTest(unittest.TestCase):
         self.assert_get_called(
             ids="ga:12345",
             start_date="2012-01-01", end_date="2012-01-02",
-            metrics="ga:metric", dimensions=""
+            metrics="ga:metric"
         )
         self.assertEqual(results.kind, "analytics#gaData")
         self.assertEqual(len(results), 48)
