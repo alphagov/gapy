@@ -221,6 +221,16 @@ class QueryClientTest(unittest.TestCase):
         self.assertEqual(results.kind, "analytics#gaData")
         self.assertEqual(len(results), 48)
 
+    def test_short_query_with_no_rows(self):
+        self.mock_get("no-rows")
+
+        results = self.client.get("12345",
+                                  date(2012, 1, 1), date(2012, 1, 2),
+                                  "metric")
+
+        self.assertEqual(len(results), 0)
+        self.assertEqual(len([r for r in results]), 0)
+
     def test_long_query(self):
         self.mock_get("long-query")
 

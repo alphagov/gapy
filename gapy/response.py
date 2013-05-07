@@ -27,11 +27,11 @@ class QueryResponse(BaseResponse):
         self._dimensions = dimensions
 
     def __len__(self):
-        return len(self._response["rows"])
+        return len(self._response.get("rows", []))
 
     def __iter__(self):
         while True:
-            for row in self._response["rows"]:
+            for row in self._response.get("rows", []):
                 result = {
                     "metrics": dict(
                         zip(self._metrics, row[len(self._dimensions):])),

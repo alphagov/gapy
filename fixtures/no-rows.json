@@ -1,0 +1,40 @@
+{"kind": "analytics#gaData", "containsSampledData": true, "totalResults": 48, "itemsPerPage": 1000, "profileInfo": {
+    "webPropertyId": "UA-26179049-1",
+    "internalWebPropertyId": "50705554",
+    "tableId": "ga:53872948",
+    "profileId": "53872948",
+    "profileName": "1. GOV.UK (Entire site - Filtered)",
+    "accountId": "26179049"
+}, "columnHeaders": [
+    {
+        "dataType": "STRING",
+        "columnType": "DIMENSION",
+        "name": "ga:date"
+    },
+    {
+        "dataType": "STRING",
+        "columnType": "DIMENSION",
+        "name": "ga:hour"
+    },
+    {
+        "dataType": "INTEGER",
+        "columnType": "METRIC",
+        "name": "ga:visits"
+    },
+    {
+        "dataType": "INTEGER",
+        "columnType": "METRIC",
+        "name": "ga:visitors"
+    }
+], "query": {
+    "max-results": 1000,
+    "dimensions": "ga:date,ga:hour",
+    "start-date": "2012-11-10",
+    "start-index": 1,
+    "ids": "ga:53872948",
+    "metrics": ["ga:visits", "ga:visitors"],
+    "end-date": "2012-11-11"
+}, "totalsForAllResults": {
+    "ga:visitors": "781078",
+    "ga:visits": "796535"
+}, "id": "https://www.googleapis.com/analytics/v3/data/ga?ids=ga:53872948&dimensions=ga:date,ga:hour&metrics=ga:visits,ga:visitors&start-date=2012-11-10&end-date=2012-11-11", "selfLink": "https://www.googleapis.com/analytics/v3/data/ga?ids=ga:53872948&dimensions=ga:date,ga:hour&metrics=ga:visits,ga:visitors&start-date=2012-11-10&end-date=2012-11-11"}
