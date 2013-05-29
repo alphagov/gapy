@@ -1,2 +1,3 @@
 dist/
 gapy.egg-info/
+*.pyc
