@@ -21,7 +21,7 @@ def _get_storage(storage, storage_path):
 
 
 def from_private_key(account_name, private_key=None, private_key_path=None,
-                     storage=None, storage_path=None):
+                     storage=None, storage_path=None, api_version="v3"):
     """Create a client for a service account.
 
     Create a client with an account name and a private key.
@@ -48,10 +48,11 @@ def from_private_key(account_name, private_key=None, private_key_path=None,
                                                 GOOGLE_API_SCOPE)
     credentials.set_store(storage)
 
-    return Client(_build(credentials))
+    return Client(_build(credentials, api_version))
 
 
-def from_secrets_file(client_secrets, storage=None, storage_path=None):
+def from_secrets_file(client_secrets, storage=None, storage_path=None,
+                      api_version="v3"):
     """Create a client for a web or installed application.
 
     Create a client with a client secrets file.
@@ -70,15 +71,15 @@ def from_secrets_file(client_secrets, storage=None, storage_path=None):
     if credentials is None or credentials.invalid:
         credentials = run(flow, storage)
 
-    return Client(_build(credentials))
+    return Client(_build(credentials, api_version))
 
 
-def _build(credentials):
+def _build(credentials, api_version):
     """Build the client object."""
     http = httplib2.Http()
     http = credentials.authorize(http)
 
-    return build("analytics", "v3", http=http)
+    return build("analytics", api_version, http=http)
 
 
 class Client(object):
