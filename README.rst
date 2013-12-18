@@ -17,16 +17,16 @@ They can be provided as lists or single values.
 
 .. code :: python
 
-    import gapy
+    import gapy.client
 
     # For a service account
-    client = gapy.client_from_private_key(
+    client = gapy.client.from_private_key(
         "your account name",
         private_key="your private key",
         storage_path="path/to/storage.db")
 
     # For a web or installed application
-    client = gapy.client_from_secrets_file(
+    client = gapy.client.from_secrets_file(
         "/path/to/client_secrets.json",
         storage_path="/path/to/storage.db")
     )
