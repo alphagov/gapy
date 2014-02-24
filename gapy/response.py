@@ -2,6 +2,14 @@ from datetime import datetime
 import urlparse
 
 
+def parse_ga_url(url):
+    escape_semicolons = url.replace(";", "%3B")
+    query = urlparse.parse_qsl(
+        urlparse.urlparse(escape_semicolons).query)
+    return dict(
+        (key.replace("-", "_"), values) for key, values in query)
+
+
 class BaseResponse(object):
     def __init__(self, response):
         self._response = response
@@ -47,11 +55,7 @@ class QueryResponse(BaseResponse):
                     self._add_datetime(result["dimensions"])
                 yield result
             if self._response.get("nextLink"):
-                next_query = urlparse.parse_qsl(
-                    urlparse.urlparse(self._response["nextLink"]).query)
-                next_kwargs = dict(
-                    (key.replace("-", "_"), values) for key, values in
-                    next_query)
+                next_kwargs = parse_ga_url(self._response.get("nextLink"))
                 self._response = self._service.get_raw_response(**next_kwargs)
             else:
                 break

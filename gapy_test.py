@@ -7,6 +7,7 @@ from mock import patch, ANY, Mock, call
 from gapy.error import GapyError
 from gapy.client import ManagementClient, QueryClient, Client, \
     from_private_key, from_secrets_file
+from gapy.response import parse_ga_url
 
 
 def fixture(name):
@@ -267,6 +268,16 @@ class QueryClientTest(unittest.TestCase):
             ids='ga:12345', end_date='2012-01-15', start_date='2012-01-10',
             start_index="1001", max_results="1000"
         ))
+
+
+class ParseGAUrlTest(unittest.TestCase):
+    def test_url_with_semicolon(self):
+        next_kwargs = parse_ga_url(
+            "https://www.googleapis.com/analytics/v3/data/ga?ids=ga:53872948&dimensions=ga:pageTitle,ga:pagePath,ga:day,ga:month,ga:year&metrics=ga:pageviews&filters=ga:pagePath!~%5E(/$%7C/(.*-finished$%7C%5C?backtoPage%7Ctransformation%7Cservice-manual%7Cperformance%7Cgovernment%7Csearch%7Cdone%7Cprint).*);ga:pageTitle!~(404%7C410%7C500%7C504%7C510%7CAn+error+has+occurred)&start-date=2014-02-10&end-date=2014-02-23&start-index=1001&max-results=1000")
+
+        self.assertEqual(
+            next_kwargs['filters'],
+            "ga:pagePath!~^(/$|/(.*-finished$|\\?backtoPage|transformation|service-manual|performance|government|search|done|print).*);ga:pageTitle!~(404|410|500|504|510|An error has occurred)")
 
 
 if __name__ == "__main__":
