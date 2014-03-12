@@ -8,6 +8,7 @@ from gapy.response import ManagementResponse, QueryResponse
 from gapy.error import GapyError
 
 GOOGLE_API_SCOPE = "https://www.googleapis.com/auth/analytics"
+GOOGLE_API_SCOPE_READONLY = "https://www.googleapis.com/auth/analytics.readonly"
 REDIRECT_URI = "urn:ietf:wg:oauth:2.0:oob"
 
 
@@ -21,7 +22,8 @@ def _get_storage(storage, storage_path):
 
 
 def from_private_key(account_name, private_key=None, private_key_path=None,
-                     storage=None, storage_path=None, api_version="v3"):
+                     storage=None, storage_path=None, api_version="v3",
+                     readonly=False):
     """Create a client for a service account.
 
     Create a client with an account name and a private key.
@@ -33,6 +35,8 @@ def from_private_key(account_name, private_key=None, private_key_path=None,
       storage: oauth2client.client.Storage, a Storage implementation to store
                credentials.
       storage_path: str, path to a file storage.
+      readonly: bool, default False, if True only readonly access is requested
+                from GA.
     """
     if not private_key:
         if not private_key_path:
@@ -44,15 +48,16 @@ def from_private_key(account_name, private_key=None, private_key_path=None,
 
     storage = _get_storage(storage, storage_path)
 
+    scope = GOOGLE_API_SCOPE_READONLY if readonly else GOOGLE_API_SCOPE
     credentials = SignedJwtAssertionCredentials(account_name, private_key,
-                                                GOOGLE_API_SCOPE)
+                                                scope)
     credentials.set_store(storage)
 
     return Client(_build(credentials, api_version))
 
 
 def from_secrets_file(client_secrets, storage=None, storage_path=None,
-                      api_version="v3"):
+                      api_version="v3", readonly=False):
     """Create a client for a web or installed application.
 
     Create a client with a client secrets file.
@@ -63,9 +68,12 @@ def from_secrets_file(client_secrets, storage=None, storage_path=None,
       storage: oauth2client.client.Storage, a Storage implementation to store
                credentials.
       storage_path: str, path to a file storage.
+      readonly: bool, default False, if True only readonly access is requested
+                from GA.
     """
+    scope = GOOGLE_API_SCOPE_READONLY if readonly else GOOGLE_API_SCOPE
     flow = flow_from_clientsecrets(client_secrets,
-                                   scope=GOOGLE_API_SCOPE)
+                                   scope=scope)
     storage = _get_storage(storage, storage_path)
     credentials = storage.get()
     if credentials is None or credentials.invalid:
