@@ -7,7 +7,7 @@ Get set up
 ----------
 
 First you need to create either a service account or client ID in your
-[Google API Console](https://code.google.com/apis/console). If you're
+`Google API Console <https://code.google.com/apis/console>`_. If you're
 authenticating as a service account you'll need to download your private key.
 If you're authenticating as a web or installed application you'll need to
 download your client secrets file (Download JSON in API Access list).
@@ -37,4 +37,9 @@ They can be provided as lists or single values.
                 datetime(2012, 2, 2),
                 ["visits", "visitors"],
                 "date")
+                
+Google API documentation
+------------------------
+
+This library is a layer over the Google Python API. If you wish to work on it, it may be necessary to consult `the Google Analytics API documentation <https://developers.google.com/resources/api-libraries/documentation/analytics/v3/python/latest/analytics_v3.data.ga.html>`_.
 
