@@ -148,8 +148,15 @@ class QueryClient(object):
             return [value]
 
     def _prefix_ga(self, values):
-        """Prefix all items in a list with 'ga:'"""
-        return ("ga:%s" % value for value in values)
+        """
+        Prefix all items in a list with 'ga:'
+        """
+        def f(value):
+            if value.startswith("-"):
+                # Sort values may be prefixed with - to indicate negative sort
+                return "-ga:%s" % value.lstrip("-")
+            return "ga:%s" % value
+        return (f(value) for value in values)
 
     def _to_ga_param(self, values):
         """Turn a list of values into a GA list parameter"""
