@@ -15,6 +15,7 @@ def fixture(name):
 
 
 class GapyTest(unittest.TestCase):
+
     def test_service_account_fails_with_no_private_key(self):
         self.assertRaises(
             GapyError,
@@ -49,6 +50,7 @@ class GapyTest(unittest.TestCase):
 
 
 class ManagementClientTest(unittest.TestCase):
+
     def setUp(self):
         self.service = Mock()
         self.client = ManagementClient(self.service)
@@ -147,6 +149,7 @@ class ManagementClientTest(unittest.TestCase):
 
 
 class QueryClientTest(unittest.TestCase):
+
     def setUp(self):
         self.service = Mock()
         self.client = QueryClient(self.service)
@@ -266,18 +269,60 @@ class QueryClientTest(unittest.TestCase):
         self.assertEqual(calls[1], call(
             metrics='ga:visits,ga:visitors', dimensions='ga:date,ga:hour',
             ids='ga:12345', end_date='2012-01-15', start_date='2012-01-10',
-            start_index="1001", max_results="1000"
+            start_index="1001",
+            max_results="1000",  # Because the next-link instructs us to use
+                                 # this as max_results.
         ))
 
 
 class ParseGAUrlTest(unittest.TestCase):
+
     def test_url_with_semicolon(self):
         next_kwargs = parse_ga_url(
-            "https://www.googleapis.com/analytics/v3/data/ga?ids=ga:53872948&dimensions=ga:pageTitle,ga:pagePath,ga:day,ga:month,ga:year&metrics=ga:pageviews&filters=ga:pagePath!~%5E(/$%7C/(.*-finished$%7C%5C?backtoPage%7Ctransformation%7Cservice-manual%7Cperformance%7Cgovernment%7Csearch%7Cdone%7Cprint).*);ga:pageTitle!~(404%7C410%7C500%7C504%7C510%7CAn+error+has+occurred)&start-date=2014-02-10&end-date=2014-02-23&start-index=1001&max-results=1000")
+            "https://www.googleapis.com/analytics/v3/data/ga"
+            "?ids=ga:53872948"
+            "&dimensions=ga:pageTitle,ga:pagePath,ga:day,ga:month,ga:year"
+            "&metrics=ga:pageviews"
+            "&filters=ga:pagePath!~%5E(/$"
+            "%7C/(.*-finished$"
+            "%7C%5C?backtoPage"
+            "%7Ctransformation"
+            "%7Cservice-manual"
+            "%7Cperformance"
+            "%7Cgovernment"
+            "%7Csearch"
+            "%7Cdone"
+            "%7Cprint).*);"
+            "ga:pageTitle!~(404"
+            "%7C410"
+            "%7C500"
+            "%7C504"
+            "%7C510"
+            "%7CAn+error+has+occurred)"
+            "&start-date=2014-02-10"
+            "&end-date=2014-02-23"
+            "&start-index=1001"
+            "&max-results=1000")
 
         self.assertEqual(
             next_kwargs['filters'],
-            "ga:pagePath!~^(/$|/(.*-finished$|\\?backtoPage|transformation|service-manual|performance|government|search|done|print).*);ga:pageTitle!~(404|410|500|504|510|An error has occurred)")
+            "ga:pagePath!~^(/$"
+            "|/(.*-finished$"
+            "|\\?backtoPage"
+            "|transformation"
+            "|service-manual"
+            "|performance"
+            "|government"
+            "|search"
+            "|done"
+            "|print).*);"
+            "ga:pageTitle!~("
+            "404"
+            "|410"
+            "|500"
+            "|504"
+            "|510"
+            "|An error has occurred)")
 
 
 if __name__ == "__main__":

@@ -83,6 +83,7 @@ def _build(credentials, api_version):
 
 
 class Client(object):
+
     def __init__(self, service):
         self._service = service
 
@@ -96,6 +97,7 @@ class Client(object):
 
 
 class ManagementClient(object):
+
     def __init__(self, service):
         self._service = service
 
@@ -132,6 +134,7 @@ class ManagementClient(object):
 
 
 class QueryClient(object):
+
     def __init__(self, service):
         self._service = service
 
