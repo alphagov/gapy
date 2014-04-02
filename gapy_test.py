@@ -228,6 +228,36 @@ class QueryClientTest(unittest.TestCase):
         self.assertEqual(results.kind, "analytics#gaData")
         self.assertEqual(len(results), 48)
 
+    def test_short_query_call_with_max_results(self):
+        self.mock_get("short-query")
+
+        # Result is intentionally ignored: short-query doesn't mock length
+        # since that wouldn't test any logic in gapy.
+        self.client.get("12345", date(2012, 1, 1), date(2012, 1, 2),
+                        "metric", max_results=10)
+
+        self.assert_get_called(
+            ids="ga:12345",
+            start_date="2012-01-01", end_date="2012-01-02",
+            metrics="ga:metric",
+            max_results=10,
+        )
+
+    def test_short_query_call_with_sort(self):
+        self.mock_get("short-query")
+
+        # Result is intentionally ignored: short-query doesn't mock length
+        # since that wouldn't test any logic in gapy.
+        self.client.get("12345", date(2012, 1, 1), date(2012, 1, 2),
+                        "metric", sort=["foo", "-bar"])
+
+        self.assert_get_called(
+            ids="ga:12345",
+            start_date="2012-01-01", end_date="2012-01-02",
+            metrics="ga:metric",
+            sort="ga:foo,-ga:bar",
+        )
+
     def test_short_query_with_no_rows(self):
         self.mock_get("no-rows")
 
