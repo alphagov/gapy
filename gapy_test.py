@@ -282,6 +282,22 @@ class QueryClientTest(unittest.TestCase):
         self.assertEqual(len(results), 0)
         self.assertEqual(len([r for r in results]), 0)
 
+    def test_short_query_call_with_segment(self):
+        self.mock_get("short-query")
+
+        # Result is intentionally ignored: short-query doesn't mock length
+        # since that wouldn't test any logic in gapy.
+        self.client.get("12345", date(2012, 1, 1), date(2012, 1, 2),
+                "metric", sort=["foo", "-bar"], segment="gaid::5bSnKB8rR6iYZqYezSS1sQ")
+
+        self.assert_get_called(
+            ids="ga:12345",
+            start_date="2012-01-01", end_date="2012-01-02",
+            metrics="ga:metric",
+            sort="ga:foo,-ga:bar",
+            segment="gaid::5bSnKB8rR6iYZqYezSS1sQ"
+        )
+
     def test_long_query(self):
         self.mock_get("long-query")
 
