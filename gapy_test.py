@@ -309,10 +309,12 @@ class QueryClientTest(unittest.TestCase):
 
         # Check that when max_results is specified and sufficient results
         # are fetched already, nextLink is not followed and the API is called
-        # with max_results = 1000
+        # with max_results = N_MAX
+
         self.mock_get("long-query")
 
-        N_MAX = 1000
+        # This is the number of results
+        N_MAX = 2
 
         results = self.client.get("12345",
                                   date(2012, 1, 1), date(2012, 1, 2),
@@ -323,7 +325,8 @@ class QueryClientTest(unittest.TestCase):
         # Fetch a limited number of results
         r = list(islice(results, 0, 99))
 
-        self.assertEqual(len(r), 1)
+        N_ROWS_IN_FIXTURE = 2
+        self.assertEqual(len(r), N_ROWS_IN_FIXTURE)
 
         calls = self.get_call_args_list()
 
