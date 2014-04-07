@@ -145,6 +145,19 @@ class ManagementClientTest(unittest.TestCase):
             self.client.profile,
             "26179049", "UA-26179049-2", "53872949")
 
+    def test_segments(self):
+        self.mock_list("segments")
+
+        segments = self.client.segments()
+
+        self.assert_list_called("segments")
+        self.assertEqual(segments.username,
+                         "673591833363@developer.gserviceaccount.com")
+        self.assertEqual(segments.kind, "analytics#segments")
+
+        segment = iter(segments).next()
+        self.assertEqual(segment["id"], "-2")
+
 
 class QueryClientTest(unittest.TestCase):
     def setUp(self):
