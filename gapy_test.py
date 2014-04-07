@@ -1,4 +1,5 @@
 from datetime import date
+from itertools import islice
 import json
 import unittest
 from oauth2client.clientsecrets import InvalidClientSecretsError
@@ -294,7 +295,7 @@ class QueryClientTest(unittest.TestCase):
         self.assertEqual(calls[0], call(
             metrics='ga:metric,ga:metric2',
             dimensions='ga:dimension,ga:dimension2',
-            ids='ga:12345', end_date='2012-01-02', start_date='2012-01-01'
+            ids='ga:12345', end_date='2012-01-02', start_date='2012-01-01',
         ))
         self.assertEqual(calls[1], call(
             metrics='ga:visits,ga:visitors', dimensions='ga:date,ga:hour',
@@ -302,6 +303,36 @@ class QueryClientTest(unittest.TestCase):
             start_index="1001",
             max_results="1000",  # Because the next-link instructs us to use
                                  # this as max_results.
+        ))
+
+    def test_long_query_max_results(self):
+
+        # Check that when max_results is specified and sufficient results
+        # are fetched already, nextLink is not followed and the API is called
+        # with max_results = 1000
+        self.mock_get("long-query")
+
+        N_MAX = 1000
+
+        results = self.client.get("12345",
+                                  date(2012, 1, 1), date(2012, 1, 2),
+                                  ["metric", "metric2"],
+                                  ["dimension", "dimension2"],
+                                  max_results=N_MAX)
+
+        # Fetch a limited number of results
+        r = list(islice(results, 0, 99))
+
+        self.assertEqual(len(r), 1)
+
+        calls = self.get_call_args_list()
+
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(calls[0], call(
+            metrics='ga:metric,ga:metric2',
+            dimensions='ga:dimension,ga:dimension2',
+            ids='ga:12345', end_date='2012-01-02', start_date='2012-01-01',
+            max_results=N_MAX,
         ))
 
 
