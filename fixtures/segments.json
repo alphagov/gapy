@@ -1,0 +1,27 @@
+{
+      "username": "673591833363@developer.gserviceaccount.com",
+      "kind": "analytics#segments",
+      "items": [
+        {
+            "definition": "ga:visitorType==New Visitor",
+            "kind": "analytics#segment", 
+            "segmentId": "gaid::-2", 
+            "type": "BUILT_IN", 
+            "id": "-2", 
+            "selfLink": "https://www.googleapis.com/analytics/v3/management/segments/gaid::-2",
+            "name": "New Visitors" 
+        },
+        {
+            "definition": "ga:visitorType==Returning Visitor",
+            "kind": "analytics#segment", 
+            "segmentId": "gaid::-3", 
+            "type": "BUILT_IN", 
+            "id": "-3", 
+            "selfLink": "https://www.googleapis.com/analytics/v3/management/segments/gaid::-3",
+            "name": "Returning Visitors"
+        }
+      ],
+      "itemsPerPage": 1000,
+      "startIndex": 1,
+      "totalResults": 1
+}

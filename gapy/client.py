@@ -126,6 +126,9 @@ class ManagementClient(object):
     def profile(self, account, webproperty, id):
         return self._item(self.profiles(account, webproperty), id)
 
+    def segments(self):
+        return self._list("segments")
+
     def _list(self, name, **kwargs):
         return ManagementResponse(
             getattr(self._service.management(), name)().list(
