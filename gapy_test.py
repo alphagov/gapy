@@ -1,4 +1,5 @@
 from datetime import date
+from itertools import islice
 import json
 import unittest
 from oauth2client.clientsecrets import InvalidClientSecretsError
@@ -15,6 +16,7 @@ def fixture(name):
 
 
 class GapyTest(unittest.TestCase):
+
     def test_service_account_fails_with_no_private_key(self):
         self.assertRaises(
             GapyError,
@@ -49,6 +51,7 @@ class GapyTest(unittest.TestCase):
 
 
 class ManagementClientTest(unittest.TestCase):
+
     def setUp(self):
         self.service = Mock()
         self.client = ManagementClient(self.service)
@@ -160,6 +163,7 @@ class ManagementClientTest(unittest.TestCase):
 
 
 class QueryClientTest(unittest.TestCase):
+
     def setUp(self):
         self.service = Mock()
         self.client = QueryClient(self.service)
@@ -238,6 +242,36 @@ class QueryClientTest(unittest.TestCase):
         self.assertEqual(results.kind, "analytics#gaData")
         self.assertEqual(len(results), 48)
 
+    def test_short_query_call_with_max_results(self):
+        self.mock_get("short-query")
+
+        # Result is intentionally ignored: short-query doesn't mock length
+        # since that wouldn't test any logic in gapy.
+        self.client.get("12345", date(2012, 1, 1), date(2012, 1, 2),
+                        "metric", max_results=10)
+
+        self.assert_get_called(
+            ids="ga:12345",
+            start_date="2012-01-01", end_date="2012-01-02",
+            metrics="ga:metric",
+            max_results=10,
+        )
+
+    def test_short_query_call_with_sort(self):
+        self.mock_get("short-query")
+
+        # Result is intentionally ignored: short-query doesn't mock length
+        # since that wouldn't test any logic in gapy.
+        self.client.get("12345", date(2012, 1, 1), date(2012, 1, 2),
+                        "metric", sort=["foo", "-bar"])
+
+        self.assert_get_called(
+            ids="ga:12345",
+            start_date="2012-01-01", end_date="2012-01-02",
+            metrics="ga:metric",
+            sort="ga:foo,-ga:bar",
+        )
+
     def test_short_query_with_no_rows(self):
         self.mock_get("no-rows")
 
@@ -274,23 +308,98 @@ class QueryClientTest(unittest.TestCase):
         self.assertEqual(calls[0], call(
             metrics='ga:metric,ga:metric2',
             dimensions='ga:dimension,ga:dimension2',
-            ids='ga:12345', end_date='2012-01-02', start_date='2012-01-01'
+            ids='ga:12345', end_date='2012-01-02', start_date='2012-01-01',
         ))
         self.assertEqual(calls[1], call(
             metrics='ga:visits,ga:visitors', dimensions='ga:date,ga:hour',
             ids='ga:12345', end_date='2012-01-15', start_date='2012-01-10',
-            start_index="1001", max_results="1000"
+            start_index="1001",
+            max_results="1000",  # Because the next-link instructs us to use
+                                 # this as max_results.
+        ))
+
+    def test_long_query_max_results(self):
+
+        # Check that when max_results is specified and sufficient results
+        # are fetched already, nextLink is not followed and the API is called
+        # with max_results = N_MAX
+
+        self.mock_get("long-query")
+
+        # This is the number of results
+        N_MAX = 2
+
+        results = self.client.get("12345",
+                                  date(2012, 1, 1), date(2012, 1, 2),
+                                  ["metric", "metric2"],
+                                  ["dimension", "dimension2"],
+                                  max_results=N_MAX)
+
+        # Fetch a limited number of results
+        r = list(islice(results, 0, 99))
+
+        N_ROWS_IN_FIXTURE = 2
+        self.assertEqual(len(r), N_ROWS_IN_FIXTURE)
+
+        calls = self.get_call_args_list()
+
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(calls[0], call(
+            metrics='ga:metric,ga:metric2',
+            dimensions='ga:dimension,ga:dimension2',
+            ids='ga:12345', end_date='2012-01-02', start_date='2012-01-01',
+            max_results=N_MAX,
         ))
 
 
 class ParseGAUrlTest(unittest.TestCase):
+
     def test_url_with_semicolon(self):
         next_kwargs = parse_ga_url(
-            "https://www.googleapis.com/analytics/v3/data/ga?ids=ga:53872948&dimensions=ga:pageTitle,ga:pagePath,ga:day,ga:month,ga:year&metrics=ga:pageviews&filters=ga:pagePath!~%5E(/$%7C/(.*-finished$%7C%5C?backtoPage%7Ctransformation%7Cservice-manual%7Cperformance%7Cgovernment%7Csearch%7Cdone%7Cprint).*);ga:pageTitle!~(404%7C410%7C500%7C504%7C510%7CAn+error+has+occurred)&start-date=2014-02-10&end-date=2014-02-23&start-index=1001&max-results=1000")
+            "https://www.googleapis.com/analytics/v3/data/ga"
+            "?ids=ga:53872948"
+            "&dimensions=ga:pageTitle,ga:pagePath,ga:day,ga:month,ga:year"
+            "&metrics=ga:pageviews"
+            "&filters=ga:pagePath!~%5E(/$"
+            "%7C/(.*-finished$"
+            "%7C%5C?backtoPage"
+            "%7Ctransformation"
+            "%7Cservice-manual"
+            "%7Cperformance"
+            "%7Cgovernment"
+            "%7Csearch"
+            "%7Cdone"
+            "%7Cprint).*);"
+            "ga:pageTitle!~(404"
+            "%7C410"
+            "%7C500"
+            "%7C504"
+            "%7C510"
+            "%7CAn+error+has+occurred)"
+            "&start-date=2014-02-10"
+            "&end-date=2014-02-23"
+            "&start-index=1001"
+            "&max-results=1000")
 
         self.assertEqual(
             next_kwargs['filters'],
-            "ga:pagePath!~^(/$|/(.*-finished$|\\?backtoPage|transformation|service-manual|performance|government|search|done|print).*);ga:pageTitle!~(404|410|500|504|510|An error has occurred)")
+            "ga:pagePath!~^(/$"
+            "|/(.*-finished$"
+            "|\\?backtoPage"
+            "|transformation"
+            "|service-manual"
+            "|performance"
+            "|government"
+            "|search"
+            "|done"
+            "|print).*);"
+            "ga:pageTitle!~("
+            "404"
+            "|410"
+            "|500"
+            "|504"
+            "|510"
+            "|An error has occurred)")
 
 
 if __name__ == "__main__":

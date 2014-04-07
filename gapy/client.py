@@ -91,6 +91,7 @@ def _build(credentials, api_version):
 
 
 class Client(object):
+
     def __init__(self, service):
         self._service = service
 
@@ -104,6 +105,7 @@ class Client(object):
 
 
 class ManagementClient(object):
+
     def __init__(self, service):
         self._service = service
 
@@ -143,6 +145,7 @@ class ManagementClient(object):
 
 
 class QueryClient(object):
+
     def __init__(self, service):
         self._service = service
 
@@ -156,15 +159,23 @@ class QueryClient(object):
             return [value]
 
     def _prefix_ga(self, values):
-        """Prefix all items in a list with 'ga:'"""
-        return ("ga:%s" % value for value in values)
+        """
+        Prefix all items in a list with 'ga:'
+        """
+        def f(value):
+            if value.startswith("-"):
+                # Sort values may be prefixed with - to indicate negative sort
+                return "-ga:%s" % value.lstrip("-")
+            return "ga:%s" % value
+        return (f(value) for value in values)
 
     def _to_ga_param(self, values):
         """Turn a list of values into a GA list parameter"""
         return ",".join(self._prefix_ga(values))
 
     def get(self, ids, start_date, end_date, metrics,
-            dimensions=None, filters=None):
+            dimensions=None, filters=None,
+            max_results=None, sort=None):
         ids = self._to_list(ids)
         metrics = self._to_list(metrics)
 
@@ -174,6 +185,8 @@ class QueryClient(object):
         dimensions = self._to_list(dimensions)
         filters = self._to_list(filters)
 
+        sort = self._to_list(sort)
+
         return self._get_response(
             metrics, dimensions,
             ids=self._to_ga_param(ids),
@@ -181,7 +194,10 @@ class QueryClient(object):
             end_date=end_date,
             metrics=self._to_ga_param(metrics),
             dimensions=self._to_ga_param(dimensions) or None,
-            filters=self._to_ga_param(filters) or None)
+            filters=self._to_ga_param(filters) or None,
+            sort=self._to_ga_param(sort) or None,
+            max_results=max_results,
+        )
 
     def _filter_empty(self, kwargs, key):
         if key in kwargs and kwargs[key] is None:
@@ -189,13 +205,15 @@ class QueryClient(object):
         return kwargs
 
     def get_raw_response(self, **kwargs):
-        kwargs = self._filter_empty(kwargs, "dimensions")
-        kwargs = self._filter_empty(kwargs, "filters")
+        # Remove specific keyword arguments if they are `None`
+        for arg in "dimensions filters sort max_results".split():
+            kwargs = self._filter_empty(kwargs, arg)
         return self._service.data().ga().get(**kwargs).execute()
 
     def _get_response(self, m, d, **kwargs):
         return QueryResponse(
             self,
             self.get_raw_response(**kwargs),
-            m, d
+            m, d,
+            max_results=kwargs.get("max_results", None),
         )
