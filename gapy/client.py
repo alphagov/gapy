@@ -203,5 +203,6 @@ class QueryClient(object):
         return QueryResponse(
             self,
             self.get_raw_response(**kwargs),
-            m, d
+            m, d,
+            max_results=kwargs.get("max_results", None),
         )
