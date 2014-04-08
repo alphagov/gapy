@@ -175,7 +175,7 @@ class QueryClient(object):
 
     def get(self, ids, start_date, end_date, metrics,
             dimensions=None, filters=None,
-            max_results=None, sort=None):
+            max_results=None, sort=None, segment=None):
         ids = self._to_list(ids)
         metrics = self._to_list(metrics)
 
@@ -197,6 +197,7 @@ class QueryClient(object):
             filters=self._to_ga_param(filters) or None,
             sort=self._to_ga_param(sort) or None,
             max_results=max_results,
+            segment=segment
         )
 
     def _filter_empty(self, kwargs, key):
@@ -206,7 +207,7 @@ class QueryClient(object):
 
     def get_raw_response(self, **kwargs):
         # Remove specific keyword arguments if they are `None`
-        for arg in "dimensions filters sort max_results".split():
+        for arg in "dimensions filters sort max_results segment".split():
             kwargs = self._filter_empty(kwargs, arg)
         return self._service.data().ga().get(**kwargs).execute()
 
