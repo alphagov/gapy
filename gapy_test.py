@@ -34,7 +34,7 @@ class GapyTest(unittest.TestCase):
         client = from_private_key(
             "account_name", "private_key",
             storage_path="/tmp/foo.dat")
-        build.assert_called_with(ANY, ANY)
+        build.assert_called_with(ANY, ANY, None)
         self.assertTrue(isinstance(client, Client))
 
     def test_client_from_secrets_file_fails_with_no_secrets_file(self):

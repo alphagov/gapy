@@ -23,7 +23,7 @@ def _get_storage(storage, storage_path):
 
 def from_private_key(account_name, private_key=None, private_key_path=None,
                      storage=None, storage_path=None, api_version="v3",
-                     readonly=False):
+                     readonly=False, http_client=None):
     """Create a client for a service account.
 
     Create a client with an account name and a private key.
@@ -53,11 +53,11 @@ def from_private_key(account_name, private_key=None, private_key_path=None,
                                                 scope)
     credentials.set_store(storage)
 
-    return Client(_build(credentials, api_version))
+    return Client(_build(credentials, api_version, http_client))
 
 
 def from_secrets_file(client_secrets, storage=None, storage_path=None,
-                      api_version="v3", readonly=False):
+                      api_version="v3", readonly=False, http_client=None):
     """Create a client for a web or installed application.
 
     Create a client with a client secrets file.
@@ -79,15 +79,17 @@ def from_secrets_file(client_secrets, storage=None, storage_path=None,
     if credentials is None or credentials.invalid:
         credentials = run(flow, storage)
 
-    return Client(_build(credentials, api_version))
+    return Client(_build(credentials, api_version, http_client))
 
 
-def _build(credentials, api_version):
+def _build(credentials, api_version, http_client=None):
     """Build the client object."""
-    http = httplib2.Http()
-    http = credentials.authorize(http)
+    if not http_client:
+        http_client = httplib2.Http()
 
-    return build("analytics", api_version, http=http)
+    authorised_client = credentials.authorize(http_client)
+
+    return build("analytics", api_version, http=authorised_client)
 
 
 class Client(object):
