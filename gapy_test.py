@@ -200,6 +200,20 @@ class QueryClientTest(unittest.TestCase):
         self.assertEqual(result["metrics"], {"metric": "00"})
         self.assertEqual(result["dimensions"]["dimension"], u'20121110')
 
+    def test_short_query_with_ga_prefixes(self):
+        self.mock_get("short-query")
+
+        self.client.get("ga:12345",
+                        date(2012, 1, 1), date(2012, 1, 2),
+                        "ga:metric", "ga:dimension", "ga:dimension2==value")
+
+        self.assert_get_called(
+            ids="ga:12345",
+            start_date="2012-01-01", end_date="2012-01-02",
+            metrics="ga:metric", dimensions="ga:dimension",
+            filters="ga:dimension2==value"
+        )
+
     def test_short_query_with_list_arguments(self):
         self.mock_get("short-query")
 

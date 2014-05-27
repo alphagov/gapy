@@ -160,20 +160,9 @@ class QueryClient(object):
         else:
             return [value]
 
-    def _prefix_ga(self, values):
-        """
-        Prefix all items in a list with 'ga:'
-        """
-        def f(value):
-            if value.startswith("-"):
-                # Sort values may be prefixed with - to indicate negative sort
-                return "-ga:%s" % value.lstrip("-")
-            return "ga:%s" % value
-        return (f(value) for value in values)
-
     def _to_ga_param(self, values):
         """Turn a list of values into a GA list parameter"""
-        return ",".join(self._prefix_ga(values))
+        return ','.join(map(_prefix_ga, values))
 
     def get(self, ids, start_date, end_date, metrics,
             dimensions=None, filters=None,
@@ -220,3 +209,25 @@ class QueryClient(object):
             m, d,
             max_results=kwargs.get("max_results", None),
         )
+
+def _prefix_ga(value):
+    """Prefix a string with 'ga:' if it is not already
+
+    Sort values may be prefixed with '-' to indicate negative sort.
+
+    >>> _prefix_ga('foo')
+    'ga:foo'
+    >>> _prefix_ga('ga:foo')
+    'ga:foo'
+    >>> _prefix_ga('-foo')
+    '-ga:foo'
+    >>> _prefix_ga('-ga:foo')
+    '-ga:foo'
+    """
+    prefix = ''
+    if value[0] == '-':
+        value = value[1:]
+        prefix = '-'
+    if not value.startswith('ga:'):
+        prefix += 'ga:'
+    return prefix + value

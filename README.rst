@@ -12,8 +12,8 @@ authenticating as a service account you'll need to download your private key.
 If you're authenticating as a web or installed application you'll need to
 download your client secrets file (Download JSON in API Access list).
 
-Then just create a gapy client and start querying. Ids, metrics and dimensions are provided without the `ga:` prefix.
-They can be provided as lists or single values.
+Then just create a gapy client and start querying. Ids, metrics and dimensions 
+can be provided as lists or single values.
 
 .. code :: python
 
@@ -35,8 +35,8 @@ They can be provided as lists or single values.
     reach_data = client.query.get("12345",
                 datetime(2012, 1, 1),
                 datetime(2012, 2, 2),
-                ["visits", "visitors"],
-                "date")
+                ['ga:visits', 'ga:visitors'],
+                'ga:date')
                 
 Google API documentation
 ------------------------
