@@ -37,6 +37,7 @@ def from_private_key(account_name, private_key=None, private_key_path=None,
       storage_path: str, path to a file storage.
       readonly: bool, default False, if True only readonly access is requested
                 from GA.
+      http_client: httplib2.Http, Override the default http client used.
     """
     if not private_key:
         if not private_key_path:
@@ -70,6 +71,7 @@ def from_secrets_file(client_secrets, storage=None, storage_path=None,
       storage_path: str, path to a file storage.
       readonly: bool, default False, if True only readonly access is requested
                 from GA.
+      http_client: httplib2.Http, Override the default http client used.
     """
     scope = GOOGLE_API_SCOPE_READONLY if readonly else GOOGLE_API_SCOPE
     flow = flow_from_clientsecrets(client_secrets,
