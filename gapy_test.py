@@ -49,6 +49,16 @@ class GapyTest(unittest.TestCase):
             from_secrets_file,
             "fixtures/example_client_secrets.json")
 
+    @patch('gapy.client._build')
+    def test_ga_hook_is_passed_from_private_key(self, build):
+        ga_hook = Mock()
+        client = from_private_key(
+            'account_name', 'private_key',
+            storage_path='/tmp/foo.dat',
+            ga_hook=ga_hook)
+
+        self.assertEqual(client._ga_hook, ga_hook)
+
 
 class ManagementClientTest(unittest.TestCase):
 
@@ -168,9 +178,11 @@ class QueryClientTest(unittest.TestCase):
         self.service = Mock()
         self.client = QueryClient(self.service)
 
-    def mock_get(self, name):
+    def mock_get(self, name, service=None):
+        if service is None:
+            service = self.service
         data = fixture("%s.json" % name)
-        self.service.data.return_value.ga.return_value.get.return_value. \
+        service.data.return_value.ga.return_value.get.return_value. \
             execute.return_value = data
 
     def assert_get_called(self, **kwargs):
@@ -380,6 +392,20 @@ class QueryClientTest(unittest.TestCase):
             ids='ga:12345', end_date='2012-01-02', start_date='2012-01-01',
             max_results=N_MAX,
         ))
+
+    def test_ga_query_hook_is_called(self):
+        service = Mock()
+        ga_hook = Mock()
+        client = QueryClient(service, ga_hook)
+
+        self.mock_get('short-query', service)
+
+        client.get('12345', date(2012, 1, 1), date(2012, 1, 2), 'metric')
+        kwargs = {
+            'ids': 'ga:12345', 'metrics': 'ga:metric',
+            'start_date': '2012-01-01', 'end_date': '2012-01-02',
+        }
+        ga_hook.assert_called_once_with(kwargs)
 
 
 class ParseGAUrlTest(unittest.TestCase):

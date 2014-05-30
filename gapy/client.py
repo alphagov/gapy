@@ -23,7 +23,7 @@ def _get_storage(storage, storage_path):
 
 def from_private_key(account_name, private_key=None, private_key_path=None,
                      storage=None, storage_path=None, api_version="v3",
-                     readonly=False, http_client=None):
+                     readonly=False, http_client=None, ga_hook=None):
     """Create a client for a service account.
 
     Create a client with an account name and a private key.
@@ -38,6 +38,8 @@ def from_private_key(account_name, private_key=None, private_key_path=None,
       readonly: bool, default False, if True only readonly access is requested
                 from GA.
       http_client: httplib2.Http, Override the default http client used.
+      ga_hook: function, a hook that is called every time a query is made
+               against GA.
     """
     if not private_key:
         if not private_key_path:
@@ -54,11 +56,12 @@ def from_private_key(account_name, private_key=None, private_key_path=None,
                                                 scope)
     credentials.set_store(storage)
 
-    return Client(_build(credentials, api_version, http_client))
+    return Client(_build(credentials, api_version, http_client), ga_hook)
 
 
 def from_secrets_file(client_secrets, storage=None, storage_path=None,
-                      api_version="v3", readonly=False, http_client=None):
+                      api_version="v3", readonly=False, http_client=None,
+                      ga_hook=None):
     """Create a client for a web or installed application.
 
     Create a client with a client secrets file.
@@ -72,6 +75,8 @@ def from_secrets_file(client_secrets, storage=None, storage_path=None,
       readonly: bool, default False, if True only readonly access is requested
                 from GA.
       http_client: httplib2.Http, Override the default http client used.
+      ga_hook: function, a hook that is called every time a query is made
+               against GA.
     """
     scope = GOOGLE_API_SCOPE_READONLY if readonly else GOOGLE_API_SCOPE
     flow = flow_from_clientsecrets(client_secrets,
@@ -81,7 +86,7 @@ def from_secrets_file(client_secrets, storage=None, storage_path=None,
     if credentials is None or credentials.invalid:
         credentials = run(flow, storage)
 
-    return Client(_build(credentials, api_version, http_client))
+    return Client(_build(credentials, api_version, http_client), ga_hook)
 
 
 def _build(credentials, api_version, http_client=None):
@@ -96,8 +101,9 @@ def _build(credentials, api_version, http_client=None):
 
 class Client(object):
 
-    def __init__(self, service):
+    def __init__(self, service, ga_hook=None):
         self._service = service
+        self._ga_hook = ga_hook
 
     @property
     def management(self):
@@ -105,7 +111,7 @@ class Client(object):
 
     @property
     def query(self):
-        return QueryClient(self._service)
+        return QueryClient(self._service, self._ga_hook)
 
 
 class ManagementClient(object):
@@ -150,8 +156,9 @@ class ManagementClient(object):
 
 class QueryClient(object):
 
-    def __init__(self, service):
+    def __init__(self, service, ga_hook=None):
         self._service = service
+        self._ga_hook = ga_hook or (lambda kwargs: None)
 
     def _to_list(self, value):
         """Turn an argument into a list"""
@@ -199,6 +206,7 @@ class QueryClient(object):
         return kwargs
 
     def get_raw_response(self, **kwargs):
+        self._ga_hook(kwargs)
         # Remove specific keyword arguments if they are `None`
         for arg in "dimensions filters sort max_results segment".split():
             kwargs = self._filter_empty(kwargs, arg)
