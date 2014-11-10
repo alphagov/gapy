@@ -1,7 +1,7 @@
 Gapy
 ====
 
-Gapy is a thin service account client for Google Analytics. 
+Gapy is a thin service account client for Google Analytics.
 
 Get set up
 ----------
@@ -9,11 +9,20 @@ Get set up
 First you need to create either a service account or client ID in your
 `Google API Console <https://code.google.com/apis/console>`_. If you're
 authenticating as a service account you'll need to download your private key.
-If you're authenticating as a web or installed application you'll need to
-download your client secrets file (Download JSON in API Access list).
 
-Then just create a gapy client and start querying. Ids, metrics and dimensions 
-can be provided as lists or single values.
+If you're authenticating as a web or installed application you'll need to
+download your client secrets file. Use the [Google Developers Console](https://console.developers.google.com/) to do this:
+
+- Create a Project for thte application, and add the Analytics API to the Enabled APIs list.
+- In "Credentials", click "Create new Client ID".
+- Choose "Installed Application" and type should be "Other".
+- Once it's generated your ID, click the new "Download JSON" button and save this file as client_secrets.json.
+
+Then just create a gapy client and start querying.
+
+- `storage_path` is the location where you want gapy to keep the `storage.db` file that it will generate the first time it runs.
+- Ids, metrics and dimensions can be provided as lists or single values.
+
 
 .. code :: python
 
@@ -37,7 +46,7 @@ can be provided as lists or single values.
                 datetime(2012, 2, 2),
                 ['ga:visits', 'ga:visitors'],
                 'ga:date')
-                
+
 Google API documentation
 ------------------------
 
