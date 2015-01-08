@@ -6,7 +6,7 @@ Gapy is a thin service account client for Google Analytics.
 Get set up
 ----------
 
-First you need to create either a service account or client ID in your
+First you need to create either a `service account <https://developers.google.com/accounts/docs/OAuth2ServiceAccount>`_ or client ID in your
 `Google API Console <https://code.google.com/apis/console>`_. If you're
 authenticating as a service account you'll need to download your private key.
 
