@@ -11,7 +11,7 @@ First you need to create either a `service account <https://developers.google.co
 authenticating as a service account you'll need to download your private key.
 
 If you're authenticating as a web or installed application you'll need to
-download your client secrets file. Use the [Google Developers Console](https://console.developers.google.com/) to do this:
+download your client secrets file. Use the `Google Developers Console <https://console.developers.google.com/>`_ to do this:
 
 - Create a Project for thte application, and add the Analytics API to the Enabled APIs list.
 - In "Credentials", click "Create new Client ID".
