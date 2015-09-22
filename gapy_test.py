@@ -7,7 +7,7 @@ from oauth2client.clientsecrets import InvalidClientSecretsError
 from mock import patch, ANY, Mock, call
 from gapy.error import GapyError
 from gapy.client import ManagementClient, QueryClient, Client, \
-    from_private_key, from_secrets_file
+    from_private_key, from_secrets_file, from_credentials_db
 from gapy.response import parse_ga_url
 
 
