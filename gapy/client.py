@@ -1,6 +1,7 @@
 from apiclient.discovery import build
 import httplib2
-from oauth2client.client import SignedJwtAssertionCredentials, flow_from_clientsecrets
+from oauth2client.client import SignedJwtAssertionCredentials, flow_from_clientsecrets, \
+    OAuth2WebServerFlow
 from oauth2client.file import Storage
 from oauth2client.tools import run
 
@@ -83,6 +84,41 @@ def from_secrets_file(client_secrets, storage=None, storage_path=None,
                                    scope=scope)
     storage = _get_storage(storage, storage_path)
     credentials = storage.get()
+    if credentials is None or credentials.invalid:
+        credentials = run(flow, storage)
+
+    return Client(_build(credentials, api_version, http_client), ga_hook)
+
+
+def from_credentials_db(client_secrets, storage, api_version="v3",
+                        readonly=False, http_client=None, ga_hook=None):
+    """Create a client for a web or installed application.
+
+    Create a client with a credentials stored in stagecraft db.
+
+    Args:
+        client_secrets: dict, client secrets (downloadable from
+                             Google API Console)
+      storage: stagecraft.apps.collectors.libs.ga.CredentialStorage,
+               a Storage implementation to store credentials.
+      readonly: bool, default False, if True only readonly access is requested
+                from GA.
+      http_client: httplib2.Http, Override the default http client used.
+      ga_hook: function, a hook that is called every time a query is made
+               against GA.
+    """
+    scope = GOOGLE_API_SCOPE_READONLY if readonly else GOOGLE_API_SCOPE
+    flow = OAuth2WebServerFlow(
+        client_secrets.get('client_id'),
+        client_secrets.get('client_secret'),
+        scope,
+        redirect_uri=client_secrets.get('redirect_uri'),
+        user_agent=client_secrets.get('user_agent', None),
+        auth_uri=client_secrets.get('auth_uri'),
+        token_uri=client_secrets.get('token_uri'))
+
+    credentials = storage.get()
+
     if credentials is None or credentials.invalid:
         credentials = run(flow, storage)
 
@@ -219,6 +255,7 @@ class QueryClient(object):
             m, d,
             max_results=kwargs.get("max_results", None),
         )
+
 
 def _prefix_ga(value):
     """Prefix a string with 'ga:' if it is not already
