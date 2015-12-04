@@ -3,7 +3,7 @@ import httplib2
 from oauth2client.client import SignedJwtAssertionCredentials, flow_from_clientsecrets, \
     OAuth2WebServerFlow
 from oauth2client.file import Storage
-from oauth2client.tools import run
+from oauth2client.tools import run_flow
 
 from gapy.response import ManagementResponse, QueryResponse
 from gapy.error import GapyError
@@ -85,7 +85,7 @@ def from_secrets_file(client_secrets, storage=None, storage_path=None,
     storage = _get_storage(storage, storage_path)
     credentials = storage.get()
     if credentials is None or credentials.invalid:
-        credentials = run(flow, storage)
+        credentials = run_flow(flow, storage)
 
     return Client(_build(credentials, api_version, http_client), ga_hook)
 
@@ -120,7 +120,7 @@ def from_credentials_db(client_secrets, storage, api_version="v3",
     credentials = storage.get()
 
     if credentials is None or credentials.invalid:
-        credentials = run(flow, storage)
+        credentials = run_flow(flow, storage)
 
     return Client(_build(credentials, api_version, http_client), ga_hook)
 
