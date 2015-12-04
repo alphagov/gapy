@@ -1,4 +1,4 @@
-google-api-python-client==1.0
+google-api-python-client==1.4.2
 mock==1.0.1
 nose==1.2.1
 pyOpenSSL==0.13
