@@ -1,7 +1,6 @@
 from apiclient.discovery import build
 import httplib2
-from oauth2client.client import SignedJwtAssertionCredentials, flow_from_clientsecrets, \
-    OAuth2WebServerFlow
+from oauth2client.client import SignedJwtAssertionCredentials, flow_from_clientsecrets
 from oauth2client.file import Storage
 from oauth2client.tools import run_flow
 
@@ -107,20 +106,7 @@ def from_credentials_db(client_secrets, storage, api_version="v3",
       ga_hook: function, a hook that is called every time a query is made
                against GA.
     """
-    scope = GOOGLE_API_SCOPE_READONLY if readonly else GOOGLE_API_SCOPE
-    flow = OAuth2WebServerFlow(
-        client_secrets.get('client_id'),
-        client_secrets.get('client_secret'),
-        scope,
-        redirect_uri=client_secrets.get('redirect_uri'),
-        user_agent=client_secrets.get('user_agent', None),
-        auth_uri=client_secrets.get('auth_uri'),
-        token_uri=client_secrets.get('token_uri'))
-
     credentials = storage.get()
-
-    if credentials is None or credentials.invalid:
-        credentials = run_flow(flow, storage)
 
     return Client(_build(credentials, api_version, http_client), ga_hook)
 
