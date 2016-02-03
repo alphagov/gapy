@@ -60,9 +60,9 @@ def from_private_key(account_name, private_key=None, private_key_path=None,
     return Client(_build(credentials, api_version, http_client), ga_hook)
 
 
-def from_secrets_file(client_secrets, storage=None, storage_path=None,
-                      api_version="v3", readonly=False, http_client=None,
-                      ga_hook=None):
+def from_secrets_file(client_secrets, storage=None, flags=None,
+                      storage_path=None, api_version="v3", readonly=False,
+                      http_client=None, ga_hook=None):
     """Create a client for a web or installed application.
 
     Create a client with a client secrets file.
@@ -85,7 +85,7 @@ def from_secrets_file(client_secrets, storage=None, storage_path=None,
     storage = _get_storage(storage, storage_path)
     credentials = storage.get()
     if credentials is None or credentials.invalid:
-        credentials = run_flow(flow, storage)
+        credentials = run_flow(flow, storage, flags)
 
     return Client(_build(credentials, api_version, http_client), ga_hook)
 
