@@ -17,7 +17,7 @@ packages = [
 
 requires = [
     "google-api-python-client==1.4.2",
-    "pyOpenSSL==0.13"
+    "pyOpenSSL==17.0.0."
 ]
 
 try:

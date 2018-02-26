@@ -1,3 +1,3 @@
 __title__ = "gapy"
-__version__ = "1.3.5"
-__author__ = "Rob Young"
+__version__ = "1.3.6"
+__author__ = "Government Digital Service"
